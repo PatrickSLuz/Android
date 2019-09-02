@@ -1,5 +1,10 @@
 package up.edu.br.contatos;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,5 +38,20 @@ public class MainActivity extends AppCompatActivity {
 
         ContatoDAO contatoDAO = ContatoDAO.criarInstancia();
         contatoDAO.salvar(contato);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        // Add the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                //REDIRECIONAR
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+
+        Intent intent = new Intent(getApplicationContext(), listActivity.class);
+        startActivity(intent);
     }
 }

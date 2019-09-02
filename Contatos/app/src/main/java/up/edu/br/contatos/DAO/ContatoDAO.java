@@ -1,7 +1,12 @@
 package up.edu.br.contatos.DAO;
 
+import android.app.DownloadManager;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import up.edu.br.contatos.model.Contato;
 
@@ -21,6 +26,23 @@ public class ContatoDAO {
         values.put("tipo", contato.getTipo());
 
         conn.insert("contato", null, values);
+    }
+
+    public List<Contato> listar(){
+        Cursor c = conn.query("contato", new String[] {"id","nome", "telefone", "tipo"}, null, null, null, null, "nome");
+
+        List<Contato> listaContatos = new ArrayList<>();
+        if(c.moveToFirst()){
+            do{
+                Contato contato = new Contato();
+                contato.setId(c.getLong(0));
+                contato.setNome(c.getString(1));
+                contato.setTelefone(c.getString(2));
+                contato.setTipo(c.getString(3));
+                listaContatos.add(contato);
+            }while(c.moveToNext());
+        }
+        return listaContatos;
     }
 
 }
