@@ -1,10 +1,14 @@
 package up.edu.br.contatos.model;
 
-public class Contato {
+import java.io.Serializable;
+
+public class Contato implements Serializable {
     private Long id;
     private String nome;
     private String telefone;
     private String tipo;
+    private String cep;
+    private String cpf;
 
     public Long getId() {
         return id;
@@ -38,7 +42,25 @@ public class Contato {
         this.telefone = telefone;
     }
 
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
     public String toString(){
-        return nome + " - " + telefone;
+
+       // return nome + " | " + telefone + " | " + tipo + " | " + cep + " | " + cpf;
+        return nome + " | " + telefone + " | " + tipo;
     }
 }

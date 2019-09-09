@@ -23,12 +23,15 @@ public class Conexao extends SQLiteOpenHelper {
                 "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "NOME VARCHAR(255) NOT NULL, " +
                 "TELEFONE VARCHAR(50), " +
-                "TIPO VARCHAR(50)" +
+                "TIPO VARCHAR(50), " +
+                "CEP VARCHAR(20), " +
+                "CPF VARCHAR(20)" +
                 ");");
     }
 
+
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 }

@@ -21,15 +21,22 @@ public class ContatoDAO {
 
     public void salvar (Contato contato){
         ContentValues values = new ContentValues();
+
+        // ALTERAR
+        // conn.update("contato", values, "id=?", contato);
+
+        // INSERIR
         values.put("nome", contato.getNome());
         values.put("telefone", contato.getTelefone());
         values.put("tipo", contato.getTipo());
+        values.put("cep", contato.getCep());
+        values.put("cpf", contato.getCpf());
 
         conn.insert("contato", null, values);
     }
 
     public List<Contato> listar(){
-        Cursor c = conn.query("contato", new String[] {"id","nome", "telefone", "tipo"}, null, null, null, null, "nome");
+        Cursor c = conn.query("contato", new String[] {"id","nome", "telefone", "tipo", "cep", "cpf"}, null, null, null, null, "nome");
 
         List<Contato> listaContatos = new ArrayList<>();
         if(c.moveToFirst()){
@@ -39,6 +46,8 @@ public class ContatoDAO {
                 contato.setNome(c.getString(1));
                 contato.setTelefone(c.getString(2));
                 contato.setTipo(c.getString(3));
+                contato.setCep(c.getString(4));
+                contato.setCpf(c.getString(5));
                 listaContatos.add(contato);
             }while(c.moveToNext());
         }

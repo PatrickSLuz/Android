@@ -7,8 +7,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -39,6 +41,20 @@ public class listActivity extends AppCompatActivity {
 
         // Lista
         ListView listContatos = findViewById(R.id.listContatos);
+
+        listContatos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Contato c = (Contato) parent.getItemAtPosition(position);
+
+                Intent it = new Intent(getApplicationContext(), MainActivity.class);
+                // Metodos para passar paramentros entre telas/activitys.
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("contato", c);
+                it.putExtras(bundle);
+                startActivity(it);
+            }
+        });
 
         // Itens da Lista
         ArrayAdapter<Contato> arrayContatos = new ArrayAdapter<Contato>(getApplicationContext(), android.R.layout.simple_list_item_1);
