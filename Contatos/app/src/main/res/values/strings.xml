@@ -1,10 +1,4 @@
 <resources>
     <string name="app_name">Contatos</string>
     <string name="title_activity_list">ListActivity</string>
-    <string-array name="tipos_contatos">
-        <item>Celular</item>
-        <item>Residencial</item>
-        <item>Fixo</item>
-        <item>Comercial</item>
-    </string-array>
 </resources>

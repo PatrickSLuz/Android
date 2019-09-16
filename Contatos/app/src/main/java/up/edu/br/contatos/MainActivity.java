@@ -18,15 +18,15 @@ import up.edu.br.contatos.model.Contato;
 
 public class MainActivity extends AppCompatActivity {
 
-    Spinner spinnerTipo;
-    String tipo = "Nenhum";
-
     private Contato contato;
 
     TextView txtNome;
     TextView txtTelefone;
+    Spinner spinnerTipo;
     TextView txtCep;
     TextView txtCpf;
+
+    String[] arraySpinnerTipo = new String[] {"Celular", "Residencial", "Fixo", "Comercial"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,49 +37,40 @@ public class MainActivity extends AppCompatActivity {
 
         txtNome = findViewById(R.id.txtNome);
         txtTelefone = findViewById(R.id.txtTelefone);
+        spinnerTipo = findViewById(R.id.spinnerTipo);
         txtCep = findViewById(R.id.txtCep);
         txtCpf = findViewById(R.id.txtCpf);
 
-        // Verificando se tem algum paramentro que foi passado para chamar esta tela.
-        if (getIntent().getExtras() != null){
-            contato = (Contato) getIntent().getExtras().getSerializable("contato");
-
-            txtNome.setText(contato.getNome());
-            txtTelefone.setText(contato.getTelefone());
-            txtCep.setText(contato.getCep());
-            txtCpf.setText(contato.getCpf());
-
-        }
-
-        spinnerTipo = findViewById(R.id.spinnerTipo);
-
+        // Criando e Preenchendo o SPINNER:
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.tipos_contatos, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arraySpinnerTipo);
         // Specify the layout to use when the list of choices appears
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinnerTipo.setAdapter(spinnerAdapter);
 
-        // Capturando o que foi selecionado no Spinner
-        spinnerTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tipo = (String) parent.getItemAtPosition(position);
-            }
+        // Verificando se tem algum paramentro que foi passado para chamar esta tela.
+        if (getIntent().getExtras() != null){
+            contato = (Contato) getIntent().getExtras().getSerializable("contato");
+            // Popular campos
+            txtNome.setText(contato.getNome());
+            txtTelefone.setText(contato.getTelefone());
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            int position = -1;
+            for(int i = 0; i < arraySpinnerTipo.length; i++){
+                if(contato.getTipo().equals(arraySpinnerTipo[i])){ // se o tipo cadastrado for igual a posição atual do array
+                    position = i;
+                    break;
+                }
             }
-        });
+            spinnerTipo.setSelection(position); // setando o item encontrado no Spinner
+
+            txtCep.setText(contato.getCep());
+            txtCpf.setText(contato.getCpf());
+        }
     }
 
     public void salvar(View view){
-
-        txtNome = findViewById(R.id.txtNome);
-        txtTelefone = findViewById(R.id.txtTelefone);
-        txtCep = findViewById(R.id.txtCep);
-        txtCpf = findViewById(R.id.txtCpf);
 
         if (contato == null){
             contato = new Contato();
@@ -87,24 +78,17 @@ public class MainActivity extends AppCompatActivity {
 
         contato.setNome(txtNome.getText().toString());
         contato.setTelefone(txtTelefone.getText().toString());
-        contato.setTipo(tipo);
+        contato.setTipo(spinnerTipo.getSelectedItem().toString());
         contato.setCep(txtCep.getText().toString());
         contato.setCpf(txtCpf.getText().toString());
 
         ContatoDAO contatoDAO = ContatoDAO.criarInstancia();
-        contatoDAO.salvar(contato);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-        // Add the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
-                //REDIRECIONAR
-            }
-        });
-
-        // Create the AlertDialog
-        AlertDialog dialog = builder.create();
+        if(contato.getId() == null){
+            contatoDAO.salvar(contato);
+        }else{
+            contatoDAO.alterar(contato);
+        }
 
         Intent intent = new Intent(getApplicationContext(), listActivity.class);
         startActivity(intent);

@@ -22,17 +22,26 @@ public class ContatoDAO {
     public void salvar (Contato contato){
         ContentValues values = new ContentValues();
 
-        // ALTERAR
-        // conn.update("contato", values, "id=?", contato);
-
-        // INSERIR
         values.put("nome", contato.getNome());
         values.put("telefone", contato.getTelefone());
         values.put("tipo", contato.getTipo());
         values.put("cep", contato.getCep());
         values.put("cpf", contato.getCpf());
 
+        // INSERIR
         conn.insert("contato", null, values);
+    }
+
+    public void alterar (Contato contato){
+        ContentValues values = new ContentValues();
+
+        values.put("nome", contato.getNome());
+        values.put("telefone", contato.getTelefone());
+        values.put("tipo", contato.getTipo());
+        values.put("cep", contato.getCep());
+        values.put("cpf", contato.getCpf());
+
+        conn.update("contato", values, "id=:id", new String[] {contato.getId().toString()});
     }
 
     public List<Contato> listar(){
