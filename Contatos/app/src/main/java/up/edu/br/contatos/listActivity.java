@@ -20,6 +20,9 @@ import up.edu.br.contatos.model.Contato;
 
 public class listActivity extends AppCompatActivity {
 
+    // ListView
+    ListView listContatos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +30,7 @@ public class listActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Botão para fazer um novo cadastro
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,12 +40,34 @@ public class listActivity extends AppCompatActivity {
                 startActivity(it);
             }
         });
+
         // criando uma conexão com o Banco de Dados
         new Conexao(getApplicationContext(), "contato.db", null, 1);
 
-        // Lista
-        ListView listContatos = findViewById(R.id.listContatos);
+        // ListView
+         listContatos = findViewById(R.id.listContatos);
 
+        // clicar/tocar e segurar no item da Lista para Deletar
+        listContatos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Contato c = (Contato) parent.getItemAtPosition(position);
+
+                ContatoDAO cDAO = new ContatoDAO();
+                cDAO.deletar(c);
+
+                // Atualizar a lista após a exclusão de um item
+                //atualizarLista();
+                ((ArrayAdapter<Contato>)parent.getAdapter()).remove(c);
+                ((ArrayAdapter<Contato>)parent.getAdapter()).notifyDataSetChanged();
+
+                Toast.makeText(listActivity.this, "Deletou: " + c.getId() + " | " + c.getNome(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        // clicar/tocar em um item da lista para editar os dados
+        // passa o contato por paramento para abrir a outra tela com suas informações carregadas
         listContatos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -56,6 +82,11 @@ public class listActivity extends AppCompatActivity {
             }
         });
 
+        atualizarLista();
+
+    }
+
+    public void atualizarLista(){
         // Itens da Lista
         ArrayAdapter<Contato> arrayContatos = new ArrayAdapter<Contato>(getApplicationContext(), android.R.layout.simple_list_item_1);
 
@@ -68,7 +99,6 @@ public class listActivity extends AppCompatActivity {
 
         // Inserir o Item na Lista
         listContatos.setAdapter(arrayContatos);
-
     }
 
 }

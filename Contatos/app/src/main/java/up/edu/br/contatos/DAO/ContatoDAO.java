@@ -44,6 +44,10 @@ public class ContatoDAO {
         conn.update("contato", values, "id=:id", new String[] {contato.getId().toString()});
     }
 
+    public void deletar (Contato contato){
+        conn.delete("contato", "id=:id", new String[] {contato.getId().toString()});
+    }
+
     public List<Contato> listar(){
         Cursor c = conn.query("contato", new String[] {"id","nome", "telefone", "tipo", "cep", "cpf"}, null, null, null, null, "nome");
 
