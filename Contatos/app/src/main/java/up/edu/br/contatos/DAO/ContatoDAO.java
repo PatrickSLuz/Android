@@ -19,25 +19,38 @@ public class ContatoDAO {
         return new ContatoDAO();
     }
 
-    public void salvar (Contato contato){
+    public boolean salvar (Contato contato){
+        List<Contato> listaContatos = listar();
+
+        for (Contato c : listaContatos) {
+            if (c.getNome().equals(contato.getNome())){
+                return false;
+            }
+        }
+
         ContentValues values = new ContentValues();
 
         values.put("nome", contato.getNome());
+        values.put("sobrenome", contato.getSobrenome());
         values.put("telefone", contato.getTelefone());
         values.put("tipo", contato.getTipo());
+        values.put("email", contato.getEmail());
         values.put("cep", contato.getCep());
         values.put("cpf", contato.getCpf());
 
         // INSERIR
         conn.insert("contato", null, values);
+        return true;
     }
 
     public void alterar (Contato contato){
         ContentValues values = new ContentValues();
 
         values.put("nome", contato.getNome());
+        values.put("sobrenome", contato.getSobrenome());
         values.put("telefone", contato.getTelefone());
         values.put("tipo", contato.getTipo());
+        values.put("email", contato.getEmail());
         values.put("cep", contato.getCep());
         values.put("cpf", contato.getCpf());
 
@@ -49,7 +62,7 @@ public class ContatoDAO {
     }
 
     public List<Contato> listar(){
-        Cursor c = conn.query("contato", new String[] {"id","nome", "telefone", "tipo", "cep", "cpf"}, null, null, null, null, "nome");
+        Cursor c = conn.query("contato", new String[] {"id","nome", "sobrenome", "telefone", "tipo", "email", "cep", "cpf"}, null, null, null, null, "nome");
 
         List<Contato> listaContatos = new ArrayList<>();
         if(c.moveToFirst()){
@@ -57,10 +70,12 @@ public class ContatoDAO {
                 Contato contato = new Contato();
                 contato.setId(c.getLong(0));
                 contato.setNome(c.getString(1));
-                contato.setTelefone(c.getString(2));
-                contato.setTipo(c.getString(3));
-                contato.setCep(c.getString(4));
-                contato.setCpf(c.getString(5));
+                contato.setSobrenome(c.getString(2));
+                contato.setTelefone(c.getString(3));
+                contato.setTipo(c.getString(4));
+                contato.setEmail(c.getString(5));
+                contato.setCep(c.getString(6));
+                contato.setCpf(c.getString(7));
                 listaContatos.add(contato);
             }while(c.moveToNext());
         }

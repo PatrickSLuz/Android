@@ -21,8 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private Contato contato;
 
     TextView txtNome;
+    TextView txtSobrenome;
     TextView txtTelefone;
     Spinner spinnerTipo;
+    TextView txtEmail;
     TextView txtCep;
     TextView txtCpf;
 
@@ -36,8 +38,10 @@ public class MainActivity extends AppCompatActivity {
         new Conexao(getApplicationContext(),"contato.db", null, 1);
 
         txtNome = findViewById(R.id.txtNome);
+        txtSobrenome = findViewById(R.id.txtSobrenome);
         txtTelefone = findViewById(R.id.txtTelefone);
         spinnerTipo = findViewById(R.id.spinnerTipo);
+        txtEmail = findViewById(R.id.txtEmail);
         txtCep = findViewById(R.id.txtCep);
         txtCpf = findViewById(R.id.txtCpf);
 
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             contato = (Contato) getIntent().getExtras().getSerializable("contato");
             // Popular campos
             txtNome.setText(contato.getNome());
+            txtSobrenome.setText(contato.getSobrenome());
             txtTelefone.setText(contato.getTelefone());
 
             int position = -1;
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             spinnerTipo.setSelection(position); // setando o item encontrado no Spinner
-
+            txtEmail.setText(contato.getEmail());
             txtCep.setText(contato.getCep());
             txtCpf.setText(contato.getCpf());
         }
@@ -77,15 +82,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         contato.setNome(txtNome.getText().toString());
+        contato.setSobrenome(txtSobrenome.getText().toString());
         contato.setTelefone(txtTelefone.getText().toString());
         contato.setTipo(spinnerTipo.getSelectedItem().toString());
+        contato.setEmail(txtEmail.getText().toString());
         contato.setCep(txtCep.getText().toString());
         contato.setCpf(txtCpf.getText().toString());
 
         ContatoDAO contatoDAO = ContatoDAO.criarInstancia();
 
         if(contato.getId() == null){
-            contatoDAO.salvar(contato);
+            if (contatoDAO.salvar(contato)){
+                Toast.makeText(this, "Contato Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(this, "Este Contato já Exite!", Toast.LENGTH_SHORT).show();
+            }
         }else{
             contatoDAO.alterar(contato);
         }

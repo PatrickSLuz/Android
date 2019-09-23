@@ -1,5 +1,7 @@
 package up.edu.br.contatos;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -50,18 +52,40 @@ public class listActivity extends AppCompatActivity {
         // clicar/tocar e segurar no item da Lista para Deletar
         listContatos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Contato c = (Contato) parent.getItemAtPosition(position);
+            public boolean onItemLongClick(final AdapterView<?> parent, View view, int position, long id) {
+                final Contato c = (Contato) parent.getItemAtPosition(position);
+                final ContatoDAO cDAO = new ContatoDAO();
+                AlertDialog alerta;
 
-                ContatoDAO cDAO = new ContatoDAO();
-                cDAO.deletar(c);
+                //Cria o gerador do AlertDialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(listActivity.this);
+                //define o titulo
+                builder.setTitle("Excluir Contato");
+                //define a mensagem
+                builder.setMessage("Você deseja excluir o Contato "+c.getNome()+" - "+c.getTelefone());
+                //define um botão como positivo
+                builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        //Toast.makeText(listActivity.this, "positivo=" + arg1, Toast.LENGTH_SHORT).show();
+                        cDAO.deletar(c);
+                        // Atualizar a lista após a exclusão de um item
+                        //atualizarLista();
+                        ((ArrayAdapter<Contato>)parent.getAdapter()).remove(c);
+                        ((ArrayAdapter<Contato>)parent.getAdapter()).notifyDataSetChanged();
+                        Toast.makeText(listActivity.this, "Deletou: " + c.getId() + " | " + c.getNome(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //define um botão como negativo.
+                builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        //Toast.makeText(listActivity.this, "negativo=" + arg1, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //cria o AlertDialog
+                alerta = builder.create();
+                //Exibe
+                alerta.show();
 
-                // Atualizar a lista após a exclusão de um item
-                //atualizarLista();
-                ((ArrayAdapter<Contato>)parent.getAdapter()).remove(c);
-                ((ArrayAdapter<Contato>)parent.getAdapter()).notifyDataSetChanged();
-
-                Toast.makeText(listActivity.this, "Deletou: " + c.getId() + " | " + c.getNome(), Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

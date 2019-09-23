@@ -22,8 +22,10 @@ public class Conexao extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE CONTATO (" +
                 "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "NOME VARCHAR(255) NOT NULL, " +
+                "SOBRENOME VARCHAR(255) NOT NULL, " +
                 "TELEFONE VARCHAR(50), " +
                 "TIPO VARCHAR(50), " +
+                "EMAIL VARCHAR(50), " +
                 "CEP VARCHAR(20), " +
                 "CPF VARCHAR(20)" +
                 ");");

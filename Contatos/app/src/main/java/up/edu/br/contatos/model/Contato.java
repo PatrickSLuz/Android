@@ -5,8 +5,10 @@ import java.io.Serializable;
 public class Contato implements Serializable {
     private Long id;
     private String nome;
+    private String sobrenome;
     private String telefone;
     private String tipo;
+    private String email;
     private String cep;
     private String cpf;
 
@@ -26,12 +28,28 @@ public class Contato implements Serializable {
         this.nome = nome;
     }
 
+    public String getSobrenome() {
+        return sobrenome;
+    }
+
+    public void setSobrenome(String sobrenome) {
+        this.sobrenome = sobrenome;
+    }
+
     public String getTipo() {
         return tipo;
     }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getTelefone() {
