@@ -4,10 +4,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,6 +27,11 @@ import up.edu.br.contatos.model.Contato;
 
 public class listActivity extends AppCompatActivity {
 
+    // Recycler View
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+
     // ListView
     ListView listContatos;
 
@@ -29,10 +39,16 @@ public class listActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        // ListView
+        listContatos = findViewById(R.id.listContatos);
+
+        // RecyclerView
+        recyclerView = findViewById(R.id.recycler_view_new);
 
         // Botão para fazer um novo cadastro
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,9 +62,19 @@ public class listActivity extends AppCompatActivity {
         // criando uma conexão com o Banco de Dados
         new Conexao(getApplicationContext(), "contato.db", null, 1);
 
-        // ListView
-         listContatos = findViewById(R.id.listContatos);
+        // Capturando as informações do BD
+        ContatoDAO contatoDAO = ContatoDAO.criarInstancia();
+        List<Contato> contatos = contatoDAO.listar();
 
+        //eventosListView();
+        //atualizarListaListView();
+
+        eventosRecyclerView();
+        atualizarListaRecyclerView(contatos);
+
+    }
+
+    public void eventosListView(){
         // clicar/tocar e segurar no item da Lista para Deletar
         listContatos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -105,12 +131,9 @@ public class listActivity extends AppCompatActivity {
                 startActivity(it);
             }
         });
-
-        atualizarLista();
-
     }
 
-    public void atualizarLista(){
+    public void atualizarListaListView(){
         // Itens da Lista
         ArrayAdapter<Contato> arrayContatos = new ArrayAdapter<Contato>(getApplicationContext(), android.R.layout.simple_list_item_1);
 
@@ -125,4 +148,21 @@ public class listActivity extends AppCompatActivity {
         listContatos.setAdapter(arrayContatos);
     }
 
+    public void eventosRecyclerView(){
+        MotionEvent.actionToString(1);
+    }
+
+    public void atualizarListaRecyclerView(List<Contato> contatos){
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // specify an adapter
+        mAdapter = new ListAdapterRecycler(contatos);
+        recyclerView.setAdapter(mAdapter);
+    }
 }
