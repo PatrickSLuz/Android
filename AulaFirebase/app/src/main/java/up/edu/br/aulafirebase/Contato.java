@@ -28,4 +28,8 @@ public class Contato {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String toString(){
+        return "Nome: "+nome+"\nE-mail: "+email;
+    }
 }
