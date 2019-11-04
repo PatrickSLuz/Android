@@ -24,13 +24,12 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    int pontosJogador = 0;
-    int pontosComputador = 0;
-
     int jogador = new Random().nextInt();
 
     String latitude;
     String longitude;
+
+    int jogadaPC = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Comunicando com o GPS do Celular
+        // Responsável por fazer a ponte entre o aplication
+        // e o gps do smartphone
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        // Escuta as alterações de posições de GPS
+        // Quando uma nova posição é recebida
+        // o método location changed é chamad
         LocationListener ll = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -48,30 +53,31 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
             }
         };
 
+        // Permissões necessárias para acessar o gps do smartphone
+        String[] permissoes =
+                {Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        // solicita a aprovação do usuário para capturar as posições de gps
+        ActivityCompat.requestPermissions(this, permissoes, 1);
+
+        //valida se tem a permissão de acesso ao gps
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
+        // regra para solicitar as posições de gps
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, ll);
 
         // Write a message to the database
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                         btnJogador.setImageResource(escolharemoto);
                     }else{
                         btnCopmutador.setImageResource(escolharemoto);
+                        jogadaPC = escolharemoto;
                     }
                 }
             }
@@ -103,111 +110,70 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void zerar(ImageButton btnPC, ImageButton btnJogador, TextView txtVencedor, TextView txtResultJogador, TextView txtResultPC){
-        btnJogador.setImageResource(R.drawable.vazio);
-        btnPC.setImageResource(R.drawable.vazio);
-        txtVencedor.setText("");
-        txtResultJogador.setText("Você\n"+0);
-        txtResultPC.setText("Adversário\n"+0);
-        pontosJogador = 0;
-        pontosComputador = 0;
-    }
-
     public void jogar (View v){
 
         ImageButton btnJogador = findViewById(R.id.btnJogador);
-        ImageButton btnCopmutador = findViewById(R.id.btnComputador);
-
-        int jogadaPC = new Random().nextInt(3) + 1; // Classe para randomizar do Java.
-
-        TextView txtVencedor = findViewById(R.id.txtVencedor);
-        TextView txtResultPC = findViewById(R.id.txtResultPC);
-        TextView txtResultJogador = findViewById(R.id.txtResultJogador);
 
         Jogada jogada = new Jogada();
-        jogada.jogador = jogador;
+        jogada.setJogador(jogador);
+        jogada.setLatitude(latitude);
+        jogada.setLongitude(longitude);
 
         if (v.getId() == R.id.btnPedra){
             btnJogador.setImageResource(R.drawable.pedra);
-            jogada.escolha = R.drawable.pedra;
+            jogada.setEscolha(R.drawable.pedra);
         }
         if (v.getId() == R.id.btnPapel){
             btnJogador.setImageResource(R.drawable.papel);
-            jogada.escolha = R.drawable.papel;
+            jogada.setEscolha(R.drawable.papel);
         }
         if (v.getId() == R.id.btnTesoura){
             btnJogador.setImageResource(R.drawable.tesoura);
-            jogada.escolha = R.drawable.tesoura;
+            jogada.setEscolha(R.drawable.tesoura);
         }
 
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("jokenpo");
         myRef.push().setValue(jogada);
-/*
-        if(jogadaPC == 1){
-            btnCopmutador.setImageResource(R.drawable.tesoura);
-        }
-        if(jogadaPC == 2){
-            btnCopmutador.setImageResource(R.drawable.papel);
-        }
-        if(jogadaPC == 3){
-            btnCopmutador.setImageResource(R.drawable.pedra);
-        }
-*/
-        if (jogadaPC == 1){
-            if(v.getId() == R.id.btnPedra){
-                // jogador ganha
-                txtVencedor.setText(" Jogador Venceu! ");
-                pontosJogador++;
-            }else if(v.getId() == R.id.btnPapel){
-                // PC ganha
-                txtVencedor.setText(" Computador Venceu! ");
-                pontosComputador++;
-            }else{
-                // empate
-                txtVencedor.setText(" Empate! ");
-            }
-        }else if (jogadaPC == 2){
-            if (v.getId() == R.id.btnPedra){
-                // PC ganha
-                txtVencedor.setText(" Computador Venceu! ");
-                pontosComputador++;
-            }else if(v.getId() == R.id.btnTesoura){
-                //Jogador ganha
-                txtVencedor.setText(" Jogador Venceu! ");
-                pontosJogador++;
-            }else{
-                // empate
-                txtVencedor.setText(" Empate! ");
-            }
-        }else if (jogadaPC == 3){
-            if (v.getId() == R.id.btnPapel){
-                //jogador ganha
-                txtVencedor.setText(" Jogador Venceu! ");
-                pontosJogador++;
-            }else if (v.getId() == R.id.btnTesoura){
-                //PC ganha
-                txtVencedor.setText(" Computador Venceu! ");
-                pontosComputador++;
-            }else {
-                // empate
-                txtVencedor.setText(" Empate! ");
-            }
-        }
 
-        txtResultJogador.setText("Você\n"+pontosJogador);
-        txtResultPC.setText("Adversário\n"+pontosComputador);
-
-        if (pontosJogador == 10) {
-            Toast.makeText(this, "JOGADOR VENCEU", Toast.LENGTH_SHORT).show();
-            zerar(btnCopmutador, btnJogador, txtVencedor, txtResultJogador, txtResultPC);
-        }else if(pontosComputador == 10) {
-            Toast.makeText(this, "COMPUTADOR VENCEU", Toast.LENGTH_SHORT).show();
-            zerar(btnCopmutador, btnJogador, txtVencedor, txtResultJogador, txtResultPC);
-        }else {
-            Toast.makeText(this, "EMPATE", Toast.LENGTH_SHORT).show();
-            zerar(btnCopmutador, btnJogador, txtVencedor, txtResultJogador, txtResultPC);
+/*        // Fazendo Verificação de quem Vence uma Rodada
+        if(jogadaPC != 0){
+            if (jogadaPC == R.drawable.tesoura){
+                if(v.getId() == R.id.btnPedra){
+                    // jogador ganha
+                    Toast.makeText(this, "Você Venceu!", Toast.LENGTH_SHORT).show();
+                }else if(v.getId() == R.id.btnPapel){
+                    // PC ganha
+                    Toast.makeText(this, "Adversário Venceu!", Toast.LENGTH_SHORT).show();
+                }else{
+                    // empate
+                    Toast.makeText(this, "Empate!", Toast.LENGTH_SHORT).show();
+                }
+            }else if (jogadaPC == R.drawable.papel){
+                if (v.getId() == R.id.btnPedra){
+                    // PC ganha
+                    Toast.makeText(this, "Adversário Venceu!", Toast.LENGTH_SHORT).show();
+                }else if(v.getId() == R.id.btnTesoura){
+                    //Jogador ganha
+                    Toast.makeText(this, "Você Venceu!", Toast.LENGTH_SHORT).show();
+                }else{
+                    // empate
+                    Toast.makeText(this, "Empate!", Toast.LENGTH_SHORT).show();
+                }
+            }else if (jogadaPC == R.drawable.pedra){
+                if (v.getId() == R.id.btnPapel){
+                    //jogador ganha
+                    Toast.makeText(this, "Você Venceu!", Toast.LENGTH_SHORT).show();
+                }else if (v.getId() == R.id.btnTesoura){
+                    //PC ganha
+                    Toast.makeText(this, "Adversário Venceu!", Toast.LENGTH_SHORT).show();
+                }else {
+                    // empate
+                    Toast.makeText(this, "Empate!", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
+        */
     }
 }
