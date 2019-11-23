@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class CadastrarEntradaSaida extends AppCompatActivity {
+public class CadastrarLancamentoActivity extends AppCompatActivity {
 
     EntradaSaida entradaSaida = new EntradaSaida();
     String montarData;
@@ -71,17 +71,23 @@ public class CadastrarEntradaSaida extends AppCompatActivity {
         // Check which radio button was clicked
         switch(rg.getCheckedRadioButtonId()) {
             case R.id.rbEntrada:
-                entradaSaida.setTipo(0);
+                entradaSaida.setTipo(Long.valueOf(0));
                 break;
             case R.id.rbSaida:
-                entradaSaida.setTipo(1);
+                entradaSaida.setTipo(Long.valueOf(1));
                 break;
         }
 
         TextView txtValor = findViewById(R.id.txtValor);
         TextView txtDescricao = findViewById(R.id.txtDesc);
 
-        entradaSaida.setData(montarData);
+        if(montarData == null){
+            Date data = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            entradaSaida.setData(formatter.format(data));
+        }else{
+            entradaSaida.setData(montarData);
+        }
         entradaSaida.setValor(Double.parseDouble(txtValor.getText().toString()));
         entradaSaida.setDescricao(txtDescricao.getText().toString());
 

@@ -2,14 +2,10 @@ package edu.up.controlefinanceiro;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,13 +13,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Double totalEntradaMes = 0.0;
-    Double totalSaidaMes = 0.0;
+    private Double totalEntradaMes = 0.0;
+    private Double totalSaidaMes = 0.0;
+
+    private List<EntradaSaida> lancamentos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
                     String mesEano = data.substring(3).replace("/","-");
                     if(mesEano.equals(mesEanoAtual)){
                         Long tipo = ds.child("tipo").getValue(Long.class);
+                        Double valor = ds.child("valor").getValue(Double.class);
                         if(tipo == 0){
-                            Double vlrEntrada = ds.child("valor").getValue(Double.class);
-                            totalEntradaMes = totalEntradaMes + vlrEntrada;
+                            totalEntradaMes += valor;
                         }else{
-                            totalSaidaMes += ds.child("valor").getValue(Double.class);
+                            totalSaidaMes += valor;
                         }
+                        String desc = ds.child("descricao").getValue(String.class);
+                        lancamentos.add(new EntradaSaida(tipo, data, valor, desc));
                     }
                 }
                 txtTotalEntradaMes.setText("+ "+totalEntradaMes);
@@ -84,12 +87,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btnCadLancamento(View view){
-        Intent intent = new Intent(this, CadastrarEntradaSaida.class);
+        Intent intent = new Intent(this, CadastrarLancamentoActivity.class);
         startActivity(intent);
     }
 
     public void btnDetalheMes(View view){
-        Intent intent = new Intent(this, DetalhesMes.class);
+        Intent intent = new Intent(this, DetalhesMesActivity.class);
+        // Metodos para passar paramentros entre telas/activitys.
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("lancamentos", (Serializable) lancamentos);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 }
