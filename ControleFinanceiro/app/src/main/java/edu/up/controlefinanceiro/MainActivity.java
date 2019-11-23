@@ -3,12 +3,13 @@ package edu.up.controlefinanceiro;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.CalendarView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,23 +17,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
-
-        // Evento de Selecionar uma Data do calendario
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-
-                String montarData = dayOfMonth +"/"+ (month+1) +"/"+ year;
-
-                Intent intent = new Intent(MainActivity.this, CadastrarEntradaSaida.class);
-                // Metodos para passar paramentros entre telas/activitys.
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("strDataSelecionada", montarData);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-        });
+    public void btnCadLancamento(View view){
+        Intent intent = new Intent(this, CadastrarEntradaSaida.class);
+        startActivity(intent);
     }
 }

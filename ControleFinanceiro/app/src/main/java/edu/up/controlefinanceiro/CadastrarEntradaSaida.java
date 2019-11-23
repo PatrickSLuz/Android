@@ -1,8 +1,11 @@
 package edu.up.controlefinanceiro;
 
+import android.app.DatePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -10,26 +13,32 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class CadastrarEntradaSaida extends AppCompatActivity {
 
     EntradaSaida entradaSaida = new EntradaSaida();
-
-    String dataSelecionada = null;
+    String montarData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastrar_entrada_saida);
 
-        TextView textData = findViewById(R.id.textData);
+        CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
 
-        // Verificando se tem algum paramentro que foi passado para chamar esta tela.
-        if (getIntent().getExtras() != null){
-            dataSelecionada = getIntent().getExtras().getSerializable("strDataSelecionada").toString();
+        // Evento de Selecionar uma Data do calendario
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
 
-            // Popular campos
-            textData.setText(dataSelecionada);
-        }
+                montarData = dayOfMonth +"/"+ (month+1) +"/"+ year;
+            }
+        });
     }
 
     public void btnSalvar(View view){
@@ -46,13 +55,14 @@ public class CadastrarEntradaSaida extends AppCompatActivity {
         }
 
         TextView txtValor = findViewById(R.id.txtValor);
-        TextView txtDescricao = findViewById(R.id.txtDescricao);
+        TextView txtDescricao = findViewById(R.id.txtDesc);
 
-        entradaSaida.setData(dataSelecionada);
+        entradaSaida.setData(montarData);
         entradaSaida.setValor(Double.parseDouble(txtValor.getText().toString()));
         entradaSaida.setDescricao(txtDescricao.getText().toString());
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(); // Captura/Conecta com a Base de Dados/Firebase
         mDatabase.child("EntradasSaidas").push().setValue(entradaSaida);
     }
+
 }
