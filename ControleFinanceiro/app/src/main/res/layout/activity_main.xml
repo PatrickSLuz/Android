@@ -33,6 +33,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="15dp"
+        android:text="Total Ganhos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtMesAnoAtual" />
+
+    <TextView
         android:id="@+id/txtTotalEntradaMes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,6 +50,16 @@
         android:layout_marginTop="8dp"
         android:textColor="#689F38"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="8dp"
+        android:text="Total Gastos"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtMesAnoAtual" />
 
     <TextView
@@ -50,7 +70,7 @@
         android:layout_marginEnd="8dp"
         android:textColor="#D50000"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtMesAnoAtual" />
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <Button
         android:id="@+id/txtDetalheMes"
