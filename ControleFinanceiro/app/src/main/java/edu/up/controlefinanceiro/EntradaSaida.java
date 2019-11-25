@@ -9,6 +9,8 @@ public class EntradaSaida implements Serializable {
     private String data;
     private Double valor;
     private String descricao;
+    private String latitude;
+    private String longitude;
 
     public EntradaSaida(){
         
@@ -39,5 +41,13 @@ public class EntradaSaida implements Serializable {
 
     public String getDescricao() { return descricao; }
 
-    public void setDescricao(String descricao) { descricao = descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public String getLatitude() { return latitude; }
+
+    public void setLatitude(String latitude) { this.latitude = latitude; }
+
+    public String getLongitude() { return longitude; }
+
+    public void setLongitude(String longitude) { this.longitude = longitude; }
 }
