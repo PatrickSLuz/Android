@@ -1,18 +1,19 @@
 package edu.up.controlefinanceiro;
 
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
 public class ListAdapterRecycler extends RecyclerView.Adapter<ListAdapterRecycler.MyViewHolder> {
-
+    
     private List<EntradaSaida> lancamentos;
 
     // Provide a reference to the views for each data item

@@ -2,9 +2,6 @@ package edu.up.controlefinanceiro;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         final TextView txtTotalSaidaMes = findViewById(R.id.txtTotalSaidaMes);
 
         // Captura/Conecta com a Base de Dados/Firebase
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mDatabase = database.getReference();
         // Read from the database
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
