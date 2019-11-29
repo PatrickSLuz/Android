@@ -8,6 +8,7 @@ public class EntradaSaida implements Serializable {
     private String data;
     private Double valor;
     private String descricao;
+    private String email;
     private String latitude;
     private String longitude;
 
@@ -20,6 +21,15 @@ public class EntradaSaida implements Serializable {
         this.data = data;
         this.valor = valor;
         this.descricao = descricao;
+    }
+
+    public EntradaSaida(Long tipo, String data, Double valor, String descricao, String latitude, String longitude){
+        this.tipo = tipo;
+        this.data = data;
+        this.valor = valor;
+        this.descricao = descricao;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
     
     public Long getId() { return id; }
@@ -41,6 +51,10 @@ public class EntradaSaida implements Serializable {
     public String getDescricao() { return descricao; }
 
     public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
 
     public String getLatitude() { return latitude; }
 

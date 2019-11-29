@@ -24,11 +24,15 @@ public class ListAdapterRecycler extends RecyclerView.Adapter<ListAdapterRecycle
         public TextView txtData;
         public TextView txtValor;
         public TextView txtDesc;
+        public TextView txtLatitude;
+        public TextView txtLongitude;
         public MyViewHolder(View v) {
             super(v);
             txtData = v.findViewById(R.id.txtData);
             txtValor = v.findViewById(R.id.txtValor);
             txtDesc = v.findViewById(R.id.txtDesc);
+            txtLatitude = v.findViewById(R.id.txtLatitude);
+            txtLongitude = v.findViewById(R.id.txtLongitude);
         }
     }
 
@@ -63,7 +67,16 @@ public class ListAdapterRecycler extends RecyclerView.Adapter<ListAdapterRecycle
             holder.txtValor.setTextColor(Color.RED);
             holder.txtValor.setText("- R$ " + formatter.format(valor));
         }
+
         holder.txtDesc.setText(lancamentos.get(position).getDescricao());
+
+        if(lancamentos.get(position).getLatitude() != null || lancamentos.get(position).getLongitude() != null){
+            holder.txtLatitude.setText("Latitude: " + (lancamentos.get(position).getLatitude()).substring(0, 10));
+            holder.txtLongitude.setText("Longitude: " + (lancamentos.get(position).getLongitude().substring(0, 10)));
+        }else{
+            holder.txtLatitude.setText("Localização não Adicionada.");
+            holder.txtLongitude.setVisibility(View.INVISIBLE);
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

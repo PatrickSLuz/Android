@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<EntradaSaida> lancamentos = new ArrayList<>();
 
+    private Usuario usuarioLogado;
+
     String mesEanoAtual = null;
 
     @Override
@@ -43,16 +46,29 @@ public class MainActivity extends AppCompatActivity {
         // Mes e Ano escolhido para exibir
         TextView txtMesAnoAtual = findViewById(R.id.txtMesAnoAtual);
 
+        // Formato recebimento da Data: MM-yyyy
         if (getIntent().getExtras() != null){
+            // Verificar Data
             mesEanoAtual = (String) getIntent().getExtras().getSerializable("mesEano");
-            String mes = obterNomeMes(Integer.parseInt(mesEanoAtual.substring(0,2)) -1);
-            String ano = mesEanoAtual.substring(3);
-            txtMesAnoAtual.setText(mes + " de " + ano);
-        }else{
-            Date dataAtual = new Date();
-            mesEanoAtual = new SimpleDateFormat("MM-yyyy").format(dataAtual);
-            String ano = new SimpleDateFormat("yyyy").format(dataAtual);
-            txtMesAnoAtual.setText(obterNomeMes(dataAtual.getMonth()) + " de " + ano);
+            if(mesEanoAtual != null){
+                String mes = obterNomeMes(Integer.parseInt(mesEanoAtual.substring(0,2)) -1);
+                String ano = mesEanoAtual.substring(3);
+                txtMesAnoAtual.setText(mes + " de " + ano);
+            }
+            else {
+                Date dataAtual = new Date();
+                mesEanoAtual = new SimpleDateFormat("MM-yyyy").format(dataAtual);
+                String ano = new SimpleDateFormat("yyyy").format(dataAtual);
+                txtMesAnoAtual.setText(obterNomeMes(dataAtual.getMonth()) + " de " + ano);
+            }
+
+            // Verificar usuario Logado
+            usuarioLogado = (Usuario) getIntent().getExtras().getSerializable("usuarioLogado");
+            if(usuarioLogado != null){
+                Toast.makeText(this, "Bem Vindo, " + usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+            }else{
+                logout();
+            }
         }
 
         getSupportActionBar().setTitle("Controle Financeiro"); // Titulo para ser exibido na sua Action Bar
@@ -69,19 +85,39 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 totalEntradaMes = 0.0;
                 totalSaidaMes = 0.0;
-                for (DataSnapshot ds : dataSnapshot.child("EntradasSaidas").getChildren()){
-                    String data = ds.child("data").getValue(String.class);
-                    String mesEano = data.substring(3).replace("/","-");
-                    if(mesEano.equals(mesEanoAtual)){
-                        Long tipo = ds.child("tipo").getValue(Long.class);
-                        Double valor = ds.child("valor").getValue(Double.class);
-                        if(tipo == 0){
-                            totalEntradaMes += valor;
-                        }else{
-                            totalSaidaMes += valor;
+                for (DataSnapshot ds : dataSnapshot.child("EntradasSaidas").getChildren()) {
+
+                    // Verificar EMAIL
+                    String email = ds.child("email").getValue(String.class);
+                    if (email != null) {
+                        if (email.equals(usuarioLogado.getEmail())) {
+
+                            // Verificar DATA (MES e ANO)
+                            String data = ds.child("data").getValue(String.class);
+                            String mesEano = data.substring(3).replace("/", "-");
+                            if (mesEano.equals(mesEanoAtual)) {
+
+                                // Verifica o TIPO (ENTRADA ou SAIDA)
+                                // e Incrementa o VALOR
+                                Long tipo = ds.child("tipo").getValue(Long.class);
+                                Double valor = ds.child("valor").getValue(Double.class);
+                                if (tipo == 0) {
+                                    totalEntradaMes += valor;
+                                } else {
+                                    totalSaidaMes += valor;
+                                }
+                                String desc = ds.child("descricao").getValue(String.class);
+
+                                // Verifica se tem LOCALIZAÇÃO
+                                String latit = ds.child("latitude").getValue(String.class);
+                                String longi = ds.child("longitude").getValue(String.class);
+                                if (latit == null || longi == null) {
+                                    lancamentos.add(new EntradaSaida(tipo, data, valor, desc));
+                                } else {
+                                    lancamentos.add(new EntradaSaida(tipo, data, valor, desc, latit, longi));
+                                }
+                            }
                         }
-                        String desc = ds.child("descricao").getValue(String.class);
-                        lancamentos.add(new EntradaSaida(tipo, data, valor, desc));
                     }
                 }
                 txtTotalEntradaMes.setText("+ "+totalEntradaMes);
@@ -110,9 +146,21 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_outro_mes:
                 trocarMes();
                 return true;
+            case R.id.action_sair:
+                logout();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void logout(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        // Metodos para passar paramentros entre telas/activitys.
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("logout", true);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     public String obterNomeMes(int mes){
@@ -136,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnCadLancamento(View view){
         Intent intent = new Intent(this, CadastrarLancamentoActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("usuarioLogado", (Serializable) usuarioLogado);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 
@@ -173,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 // Metodos para passar paramentros entre telas/activitys.
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("mesEano", mesEanoSelecionado);
+                bundle.putSerializable("usuarioLogado", (Serializable) usuarioLogado);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -193,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
         // Metodos para passar paramentros entre telas/activitys.
         Bundle bundle = new Bundle();
         bundle.putSerializable("lancamentos", (Serializable) lancamentos);
+        bundle.putSerializable("usuarioLogado", (Serializable) usuarioLogado);
         intent.putExtras(bundle);
         startActivity(intent);
     }

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class DetalhesMesActivity extends AppCompatActivity {
@@ -20,6 +21,8 @@ public class DetalhesMesActivity extends AppCompatActivity {
     // Lista de Lançamentos
     List<EntradaSaida> lancamentos = null;
 
+    private Usuario usuarioLogado;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +31,7 @@ public class DetalhesMesActivity extends AppCompatActivity {
         // Verificar paramentos recebidos
         if (getIntent().getExtras() != null){
             lancamentos = (List<EntradaSaida>) getIntent().getExtras().getSerializable("lancamentos");
+            usuarioLogado = (Usuario) getIntent().getExtras().getSerializable("usuarioLogado");
         }
 
         // RecyclerView
@@ -53,8 +57,13 @@ public class DetalhesMesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
         switch (item.getItemId()) {
             case android.R.id.home:  //ID do seu botão (gerado automaticamente pelo android - Default
-                startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
-                finishAffinity();  //Método para matar a activity e não deixa-lá indexada na pilhagem
+                //startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
+                //finishAffinity();  //Método para matar a activity e não deixa-lá indexada na pilhagem
+                Intent intent = new Intent(this, MainActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("usuarioLogado", (Serializable) usuarioLogado);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
             default:break;
         }

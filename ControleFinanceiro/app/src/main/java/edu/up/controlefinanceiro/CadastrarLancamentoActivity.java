@@ -1,7 +1,6 @@
 package edu.up.controlefinanceiro;
 
 import android.Manifest;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,10 +32,22 @@ public class CadastrarLancamentoActivity extends AppCompatActivity {
     private String latitude = null;
     private String longitude = null;
 
+    private Usuario usuarioLogado;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastrar_entrada_saida);
+
+        if (getIntent().getExtras() != null){
+            // Verificar usuario Logado
+            usuarioLogado = (Usuario) getIntent().getExtras().getSerializable("usuarioLogado");
+            if(usuarioLogado != null){
+                entradaSaida.setEmail(usuarioLogado.getEmail());
+            }else{
+                logout();
+            }
+        }
 
         // Comunicando com o GPS do Celular
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -96,13 +108,23 @@ public class CadastrarLancamentoActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Gerar Lançamento"); // Titulo para ser exibido na sua Action Bar em frente à seta
     }
 
+    private void logout(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        // Metodos para passar paramentros entre telas/activitys.
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("logout", true);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
     // SETA Voltar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
         switch (item.getItemId()) {
             case android.R.id.home:  //ID do seu botão (gerado automaticamente pelo android - Default
-                startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
-                finishAffinity();  //Método para matar a activity e não deixa-lá indexada na pilhagem
+                //startActivity(new Intent(this, MainActivity.class));  //O efeito ao ser pressionado do botão (no caso abre a activity)
+                //finishAffinity();  //Método para matar a activity e não deixa-lá indexada na pilhagem
+                abrirTelaPrincipal();
                 break;
             default:break;
         }
@@ -146,11 +168,14 @@ public class CadastrarLancamentoActivity extends AppCompatActivity {
 
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(); // Captura/Conecta com a Base de Dados/Firebase
         mDatabase.child("EntradasSaidas").push().setValue(entradaSaida);
-        abrirCadLancamento();
+        abrirTelaPrincipal();
     }
 
-    private void abrirCadLancamento(){
+    private void abrirTelaPrincipal(){
         Intent intent = new Intent(this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("usuarioLogado", (Serializable) usuarioLogado);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 
